@@ -22,7 +22,7 @@ export default function Home() {
         <Textarea placeholder="I am a textarea" />
       </div>
       <div>
-        <Checkbox label="I am a checkbox" />
+        <Checkbox />
       </div>
     </div>
     </div>
