@@ -13,9 +13,9 @@ interface Props {
 }
 
 export const Categories = ({ data }: Props) => {
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const measureRef = useRef<HTMLDivElement | null>(null)
-  const viewAllRef = useRef<HTMLDivElement | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const measureRef = useRef<HTMLDivElement>(null)
+  const viewAllRef = useRef<HTMLDivElement>(null)
 
   const [visibleCount, setVisibleCount] = useState(data.length)
   const [isAnyHovered, setIsAnyHovered] = useState(false)
@@ -28,7 +28,8 @@ export const Categories = ({ data }: Props) => {
 
   useEffect(() => {
     const calculateVisible = () => {
-      if(!containerRef.current || !measureRef.current || !viewAllRef.current) return
+      if (!containerRef.current || !measureRef.current || !viewAllRef.current) return
+
       const containerWidth = containerRef.current.offsetWidth
       const viewAllWidth = viewAllRef.current.offsetWidth
       const availableWidth = containerWidth - viewAllWidth
@@ -37,9 +38,9 @@ export const Categories = ({ data }: Props) => {
       let totalWidth = 0
       let visible = 0
 
-      for ( const item of items ) {
+      for (const item of items) {
         const width = item.getBoundingClientRect().width
-        if ( totalWidth + width > availableWidth ) break
+        if (totalWidth + width > availableWidth) break
         totalWidth += width
         visible++
       }
@@ -47,16 +48,20 @@ export const Categories = ({ data }: Props) => {
       setVisibleCount(visible)
     }
     const resizeObserver = new ResizeObserver(calculateVisible)
-    resizeObserver.observe(containerRef.current)
+    resizeObserver.observe(containerRef.current!)
     return () => resizeObserver.disconnect()
 
-    
-  },[data.length])
+
+  }, [data.length])
   return (
-    <div className="relative w-full">
+    <div 
+      className="relative w-full"
+    >
       <CategoriesSidebar open={isSideBarOpen} onOpenChange={setIsSideBarOpen} data={data} />
       {/* hidden div to measure all items */}
-      <div ref={measureRef} className="absolute opacity-0 pointer-events-none flex"
+      <div 
+        ref={measureRef} 
+        className="absolute opacity-0 pointer-events-none flex"
         style={{ position: "fixed", top: -9999, left: -9999 }}
       >
         {data.map((category) => (
@@ -72,7 +77,7 @@ export const Categories = ({ data }: Props) => {
 
       {/* visible items */}
 
-      <div 
+      <div
         ref={containerRef}
         className="flex flex-nowrap items-center"
         onMouseEnter={() => setIsAnyHovered(true)}
@@ -93,7 +98,7 @@ export const Categories = ({ data }: Props) => {
             className={cn("h-11 px-4 bg-tranparent rounded-full hover:bg-white hober:border-primary text-black",
               isActiveCategoryHidden && !isAnyHovered && "bg-white border-primary",
             )}
-            onClick={()=>setIsSideBarOpen(!isSideBarOpen)}
+            onClick={() => setIsSideBarOpen(!isSideBarOpen)}
           >
             View All
             <ListFilterIcon className="ml-2" />
