@@ -5,6 +5,7 @@ import { Footer } from "@/modules/home/components/footer"
 import { Navbar } from "@/modules/home/components/navbar"
 import { SearchFilters } from "@/modules/home/components/search-filters"
 import { Category } from "@/payload-types";
+import { CustomCategory } from "./types";
 
 interface Props {
   children: ReactNode
@@ -21,10 +22,11 @@ const Layout = async ({children}: Props) => {
       parent: {
         exists: false
       }
-    }
+    },
+    sort: "name"
   })
 
-  const formattedData = data.docs.map((doc) => ({
+  const formattedData: CustomCategory[] = data.docs.map((doc) => ({
     ...doc,
     subcategories: (doc.subcategories?.docs ?? []).map((doc)=>({
       ...(doc as Category),
@@ -32,7 +34,7 @@ const Layout = async ({children}: Props) => {
     }))
   }))
   return (
-    <div className="flex flex-col min-h-screen">
+    <div  className="flex flex-col min-h-screen">
       <Navbar />
       <SearchFilters data={formattedData}></SearchFilters>
       <div className="flex-1 bg-[#f4f4f0]">

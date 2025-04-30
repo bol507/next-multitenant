@@ -50,7 +50,9 @@ const seed = async () => {
     }
   }
 }
+const runSeed = async () => {
+  await seed();
+  process.exit(0);
+}
 
-await seed();
-
-process.exit(0);
+runSeed().catch(console.error);
