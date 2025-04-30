@@ -57,7 +57,7 @@ export const Categories = ({ data }: Props) => {
     <div 
       className="relative w-full"
     >
-      <CategoriesSidebar open={isSideBarOpen} onOpenChange={setIsSideBarOpen} data={data} />
+      <CategoriesSidebar open={isSideBarOpen} onOpenChange={setIsSideBarOpen} />
       {/* hidden div to measure all items */}
       <div 
         ref={measureRef} 
