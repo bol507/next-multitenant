@@ -1,10 +1,13 @@
 
+"use client";
 
-export default async function Home() {
-  
+
+
+
+export default  function Home() {
   return (
     <div className="p-4">
-      home page
+      Home
     </div>
   );
 }

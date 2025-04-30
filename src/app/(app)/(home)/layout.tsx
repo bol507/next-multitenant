@@ -1,42 +1,30 @@
-import { ReactNode } from "react"
-import configPromise from "@payload-config"
-import { getPayload } from "payload";
+import { ReactNode, Suspense } from "react"
 import { Footer } from "@/modules/home/components/footer"
 import { Navbar } from "@/modules/home/components/navbar"
-import { SearchFilters } from "@/modules/home/components/search-filters"
-import { Category } from "@/payload-types";
-import { CustomCategory } from "./types";
+import { SearchFilters, SearchFiltersLoading } from "@/modules/home/components/search-filters"
+import { getQueryClient, trpc } from "@/trpc/server"
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 
 interface Props {
   children: ReactNode
 }
 const Layout = async ({children}: Props) => {
-  const payload = await getPayload({
-    config: configPromise
-  })
-  const data = await payload.find({
-    collection: "categories",
-    depth: 1,
-    pagination: false,
-    where: {
-      parent: {
-        exists: false
-      }
-    },
-    sort: "name"
-  })
+  
+  const queryClient = getQueryClient()
+  void queryClient.prefetchQuery(trpc.categories.getMany.queryOptions())
 
-  const formattedData: CustomCategory[] = data.docs.map((doc) => ({
-    ...doc,
-    subcategories: (doc.subcategories?.docs ?? []).map((doc)=>({
-      ...(doc as Category),
-      subcategories: undefined,
-    }))
-  }))
+
   return (
     <div  className="flex flex-col min-h-screen">
       <Navbar />
-      <SearchFilters data={formattedData}></SearchFilters>
+      
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <Suspense fallback={<SearchFiltersLoading />}>
+           <SearchFilters></SearchFilters>
+        </Suspense>
+        
+      </HydrationBoundary>
+      
       <div className="flex-1 bg-[#f4f4f0]">
         {children}
       </div>
