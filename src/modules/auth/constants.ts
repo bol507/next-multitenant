@@ -1,1 +1,1 @@
-export const AUTH_COOKIE = "funroad-payload-auth-cookie";
+export const AUTH_COOKIE = "payload-token";
