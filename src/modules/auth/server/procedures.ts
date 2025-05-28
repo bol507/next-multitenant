@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { headers as getHeader, cookies as getCookies } from "next/headers";
 import { AUTH_COOKIE } from "../constants";
 import { loginSchema, registerSchema } from "../schemas";
+import { generateAuthCookie } from "../utils";
 
 export const authRouter = createTRPCRouter({
   session: baseProcedure.query(async ({ ctx }) => {
@@ -45,14 +46,10 @@ export const authRouter = createTRPCRouter({
         },
       })
       if(!data.token) throw new TRPCError({code:"UNAUTHORIZED", message:"Invalid email or password"})
-      const cookies = await getCookies();
-      cookies.set({
-        name: AUTH_COOKIE,
-        value: data.token,
-        httpOnly: true,
-        path: "/",
-        // TODO: ensure cross-domain cookie string
-      });
+      await generateAuthCookie({
+        prefix: ctx.db.config.cookiePrefix, 
+        value: data.token
+      })
     }),
   login: baseProcedure
     .input(loginSchema)
@@ -65,14 +62,12 @@ export const authRouter = createTRPCRouter({
         },
       })
       if(!data.token) throw new TRPCError({code:"UNAUTHORIZED", message:"Invalid email or password"})
-      const cookies = await getCookies();
-      cookies.set({
-        name: AUTH_COOKIE,
-        value: data.token,
-        httpOnly: true,
-        path: "/",
-        // TODO: ensure cross-domain cookie string
-      });
+      
+      await generateAuthCookie({
+        prefix: ctx.db.config.cookiePrefix, 
+        value: data.token
+      })
+
       return data;
     
      
