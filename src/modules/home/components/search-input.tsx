@@ -5,6 +5,8 @@ import { ListFilter, SearchIcon } from "lucide-react"
 import { CategoriesSidebar } from "./categories-sidebar"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { useTRPC } from "@/trpc/client"
+import { useQuery } from "@tanstack/react-query"
 
 
 interface Props {
@@ -15,10 +17,9 @@ export const  SearchInput = ({
   disabled
 
 }: Props) => {
-
-
   const [isSideBarOpen, setIsSideBarOpen] = useState(false)
-
+  const trpc  = useTRPC()
+  const session = useQuery(trpc.auth.session.queryOptions())
   return (
     <div className="flex items-center gap-2 w-full">
       <CategoriesSidebar open={isSideBarOpen} onOpenChange={setIsSideBarOpen}  />
