@@ -51,6 +51,7 @@ export const productsRouter = createTRPCRouter({
       const data = await ctx.db.find({
         collection: "products",
         depth: 1, // populate "category", "image"
+        where
       })
     // await new Promise((resolve) => setTimeout(resolve, 5000))
     return data;
