@@ -14,7 +14,7 @@ interface ProductFilterProps {
 
 const ProductFilter = ({ title, className,children }: ProductFilterProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const Icon = isOpen ? ChevronDownIcon : ChevronRightIcon;
+  const Icon = isOpen ? ChevronDownIcon : ChevronRightIcon; 
   return (
     <div className={cn("p-4 border-b flex flex-col gap-", className)}>
       <div
@@ -34,17 +34,32 @@ export const ProductFilters = () => {
   const onChange = (key: keyof typeof  filters, value:unknown) => {
     setFilters({...filters, [key]: value}); 
   };
+  const onClear = () => {
+    setFilters({
+      minPrice: "",
+      maxPrice: "",
+    });
+  }
+
+  const hasAnyfiler = Object.entries(filters).some(([_key, value]) => {
+    if(typeof value === "string") return value !== "";
+    return value !== null;
+  })
+
   return (
     <div className="border rounded-md bg-white">
       <div className="p-4 border-b flex items-center justify-between">
         <p className="font-medium">Filters</p>
-        <button 
-          className="underline"
-          onClick={()=>{}}
-          type="button"
-        >
-          clear
-        </button>
+        {hasAnyfiler && (
+          <button 
+            className="underline cursor-pointer"
+            onClick={()=>onClear()}
+            type="button"
+          >
+            clear
+          </button>
+        )}
+        
       </div>
       <ProductFilter title="Price" className="border-b-0">
         <PriceFilter 
