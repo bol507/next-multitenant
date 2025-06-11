@@ -43,7 +43,9 @@ export const ProductFilters = () => {
     });
   }
 
-  const hasAnyfiler = Object.entries(filters).some(([_key, value]) => {
+  const hasAnyfiler = Object.entries(filters).some(([key, value]) => {
+    if( key === "sort") return false;
+    if(Array.isArray(value)) return value.length > 0;
     if(typeof value === "string") return value !== "";
     return value !== null;
   })

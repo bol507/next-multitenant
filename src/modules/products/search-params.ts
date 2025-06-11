@@ -1,16 +1,19 @@
-import { createLoader, parseAsString, parseAsArrayOf } from "nuqs/server";
+import { createLoader, parseAsString, parseAsArrayOf, parseAsStringLiteral } from "nuqs/server";
+
+export const sortValues = ["curated", "trending", "hot_and_new"] as const;
 
 export const params = {
   minPrice: parseAsString.withOptions({
-    clearOnDefault: true,
-  }),
+      clearOnDefault: true,
+    }).withDefault(""),
   maxPrice: parseAsString.withOptions({
-    clearOnDefault: true,
-  }),
+      clearOnDefault: true,
+    }).withDefault(""),
   tags: parseAsArrayOf(parseAsString)
     .withOptions({
       clearOnDefault: true,
-    })
+    }).withDefault([]),
+  sort: parseAsStringLiteral(sortValues).withDefault("curated"),
 };
 
 export const loadProductFilters = createLoader(params);

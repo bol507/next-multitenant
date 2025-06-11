@@ -1,7 +1,8 @@
 import { Category } from "@/payload-types";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
-import { Where } from "payload";
+import { Sort, Where } from "payload";
 import { z } from "zod";
+import { sortValues } from "../search-params";
 
 export const productsRouter = createTRPCRouter({
   getMany: baseProcedure
@@ -10,10 +11,21 @@ export const productsRouter = createTRPCRouter({
         minPrice: z.string().nullable().optional(),
         maxPrice: z.string().nullable().optional(),
         tags: z.array(z.string()).nullable().optional(),
+        sort: z.enum(sortValues).nullable().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       const where: Where = {}
+      let sort: Sort = "-createdAt"
+      if(input.sort === "curated"){
+        sort = "-createdAt"
+      }
+      if(input.sort === "hot_and_new"){
+        sort = "+createdAt"
+      }
+      if(input.sort === "trending"){
+        sort = "-createdAt"
+      }
 
       if(input.minPrice && input.maxPrice){
         where.price = {
@@ -75,7 +87,8 @@ export const productsRouter = createTRPCRouter({
       const data = await ctx.db.find({
         collection: "products",
         depth: 1, // populate "category", "image"
-        where
+        where,
+        sort,
       })
     // await new Promise((resolve) => setTimeout(resolve, 5000))
     return data;
