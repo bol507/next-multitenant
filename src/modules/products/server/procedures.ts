@@ -92,6 +92,8 @@ export const productsRouter = createTRPCRouter({
         depth: 1, // populate "category", "image"
         where,
         sort,
+        page: input.cursor,
+        limit: input.limit,
       })
     // await new Promise((resolve) => setTimeout(resolve, 5000))
     return {
