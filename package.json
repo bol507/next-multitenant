@@ -2,7 +2,7 @@
   "name": "ecomm",
   "version": "0.1.0",
   "private": true,
-  "type":"module",
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -16,6 +16,7 @@
     "@payloadcms/db-mongodb": "^3.35.1",
     "@payloadcms/next": "^3.35.1",
     "@payloadcms/payload-cloud": "^3.35.1",
+    "@payloadcms/plugin-multi-tenant": "3.35.1",
     "@payloadcms/richtext-lexical": "^3.35.1",
     "@radix-ui/react-accordion": "^1.2.8",
     "@radix-ui/react-alert-dialog": "^1.1.11",
