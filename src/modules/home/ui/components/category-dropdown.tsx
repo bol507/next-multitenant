@@ -29,8 +29,6 @@ export const CategoryDropDown = ({
 
   const onMouseLeave = () => setIsOpen(false)
 
-  const dropdownPosition = getDropdownPosition()
-
   /* const toggleDropdown = () => {
     if(category.subcategories?.) {
       setIsOpen(!isOpen)
@@ -72,7 +70,6 @@ export const CategoryDropDown = ({
       <SubcategoryMenu
         category={category}
         isOpen={isOpen}
-        position={dropdownPosition}
       />
     </div>
   )
