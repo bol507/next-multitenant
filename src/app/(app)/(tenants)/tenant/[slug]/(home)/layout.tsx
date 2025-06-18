@@ -1,6 +1,6 @@
 import { Footer } from "@/modules/tenants/ui/components/footer"
 import { Navbar, NavbarSkeleton } from "@/modules/tenants/ui/components/navbar"
-import { trpc } from "@/trpc/server"
+import { getQueryClient, trpc } from "@/trpc/server"
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query"
 import { ReactNode, Suspense } from "react"
 
@@ -16,7 +16,7 @@ const Layout = async ({
 }: LayoutProps
 ) => {
   const { slug } = await params
-  const queryClient = new QueryClient()
+  const queryClient = getQueryClient()
   void queryClient.prefetchQuery(
     trpc.tenants.getOne.queryOptions({
       slug
