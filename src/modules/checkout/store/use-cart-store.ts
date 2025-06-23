@@ -1,6 +1,5 @@
-
-
-
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware/persist";
 
 interface TenantCart {
   productIds: string[];
@@ -19,6 +18,7 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       tenantCarts: {},
+
       addProduct: (tenantSlug, productId) => 
         set((state) => ({
           tenantCarts: {
@@ -29,40 +29,41 @@ export const useCartStore = create<CartState>()(
                 productId
               ]
             }
-          )),
+          }
+        }
+      )),
+          
       removeProduct: (tenantSlug, productId) => 
-        set((state) => ({
+        set( (state) => ({
           tenantCarts: {
             ...state.tenantCarts,
             [tenantSlug]: {
-              productIds:[
-                ...(state.tenantCarts[tenantSlug]?.productIds || []),
-                productId
-              ]
+              productIds: state.tenantCarts[tenantSlug]?.productIds.filter(
+                (id) => id !== productId
+              ) || [],
+              
             }
-          )),
+          }
+        })),
+          
       clearCart: (tenantSlug) => 
-        set((state) => ({
+        set( (state) => ({
           tenantCarts: {
             ...state.tenantCarts,
             [tenantSlug]: {
-              productIds:[
-                ...(state.tenantCarts[tenantSlug]?.productIds || []),
-                productId
-              ]
-            }
-          )),
-      clearAll: () => 
-        set((state) => ({
-          tenantCarts: {
-            ...state.tenantCarts,
-            [tenantSlug]: {
-              productIds:[
-                ...(state.tenantCarts[tenantSlug]?.productIds || []),
-                productId
-              ]
-            }
-          )),
+              productIds: []
+            },
+          }
+        })),
+          
+      clearAllCarts: () => 
+        set( {
+          tenantCarts: {}
+        }),
+      
+      getCartByTenant: (tenantSlug) => 
+        get().tenantCarts[tenantSlug]?.productIds || [],
+
     }),
     {
       name: "funroad-cart",
