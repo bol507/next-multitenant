@@ -7,6 +7,8 @@ import { toast } from "sonner"
 import { useEffect } from "react"
 import { generateTenantURL } from "@/lib/utils"
 import { CheckoutItem } from "../components/checkout-item"
+import { CheckoutSidebar } from "../components/checkout-sidebar"
+import { InboxIcon } from "lucide-react"
 
 interface CheckoutViewProps {
   tenantSlug: string
@@ -15,23 +17,44 @@ interface CheckoutViewProps {
 export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
   const { productIds, clearAllCarts, removeProduct } = useCart(tenantSlug)
   const trpc = useTRPC()
-  const { data,error } = useQuery(trpc.checkout.getProducts.queryOptions({
+  const { data, error, isLoading } = useQuery(trpc.checkout.getProducts.queryOptions({
     ids: productIds
   }))
-  useEffect(()=>{
-    if(error?.data?.code === "NOT_FOUND") {
+  useEffect(() => {
+    if (error?.data?.code === "NOT_FOUND") {
       clearAllCarts()
       toast.warning("Invalid products found, cart cleared")
     }
-  },[error,clearAllCarts])
+  }, [error, clearAllCarts])
+
+  if (isLoading) {
+    return (
+      <div className="lg:pt-16 pt-4 px-4 lg:px-12">
+        <div className="flex flex-col items-center justify-center gap-4 text-center">
+          <InboxIcon />
+          <p className="font-medium text-base">No products found</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (data?.totalDocs === 0) return (
+    <div className="lg:pt-16 pt-4 px-4 lg:px-12">
+      <div className="flex flex-col items-center justify-center gap-4 text-center">
+        <InboxIcon />
+        <p className="font-medium text-base">No products found</p>
+      </div> 
+    </div>
+  )
+
   return (
     <div className="lg:pt-16 pt-4 px-4 lg:px-12">
       <div className="grid grid-cols-1 lg:grid-cols-7 gap-4 lg:gap-16">
 
         <div className="lg:col-span-4">
           <div className="border rounded-md overflow-hidden bg-white">
-            { data?.docs.map( (product, index) => (
-              <CheckoutItem 
+            {data?.docs.map((product, index) => (
+              <CheckoutItem
                 key={product.id}
                 isLast={index === data.docs.length - 1}
                 imageUrl={product.image?.url}
@@ -46,7 +69,13 @@ export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
           </div>
         </div>
         <div className="lg:col-span-3">
-          checkout sidebar
+          <CheckoutSidebar
+            total={data?.totalPrice || 0}
+            onCheckout={() => { }}
+            isCanceled={false}
+            isPending={false}
+
+          />
         </div>
 
       </div>
