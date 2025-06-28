@@ -5,13 +5,15 @@ import { useCart } from "../../hooks/use-cart"
 import { useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useEffect } from "react"
+import { generateTenantURL } from "@/lib/utils"
+import { CheckoutItem } from "../components/checkout-item"
 
 interface CheckoutViewProps {
   tenantSlug: string
 }
 
 export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
-  const { productIds, clearAllCarts } = useCart(tenantSlug)
+  const { productIds, clearAllCarts, removeProduct } = useCart(tenantSlug)
   const trpc = useTRPC()
   const { data,error } = useQuery(trpc.checkout.getProducts.queryOptions({
     ids: productIds
@@ -28,7 +30,19 @@ export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
 
         <div className="lg:col-span-4">
           <div className="border rounded-md overflow-hidden bg-white">
-            1:30
+            { data?.docs.map( (product, index) => (
+              <CheckoutItem 
+                key={product.id}
+                isLast={index === data.docs.length - 1}
+                imageUrl={product.image?.url}
+                name={product.name}
+                productUrl={`${generateTenantURL(product.tenant.slug)}/products/${product.id}`}
+                tenantUrl={generateTenantURL(product.tenant.slug)}
+                tenantName={product.tenant.name}
+                price={product.price}
+                onRemove={() => removeProduct(product.id)}
+              />
+            ))}
           </div>
         </div>
         <div className="lg:col-span-3">
@@ -36,7 +50,6 @@ export const CheckoutView = ({ tenantSlug }: CheckoutViewProps) => {
         </div>
 
       </div>
-      {JSON.stringify(data, null, 2)}
     </div>
   )
 }
