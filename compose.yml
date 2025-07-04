@@ -10,9 +10,18 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mongo_data:/data/db
 
+  stripe-cli:
+    container_name: stripe-cli
+    image: stripe/stripe-cli:latest
+    stdin_open: true 
+    tty: true
+    volumes:
+      - stripe_config:/root/.config/stripe
+    command: listen --forward-to localhost:3000/api/stripe/webhooks
   
   
 volumes:
-  pgdata:
+  mongo_data:
+  stripe_config:
