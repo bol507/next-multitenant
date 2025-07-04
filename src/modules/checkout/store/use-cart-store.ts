@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware/persist";
-
+import { persist } from "zustand/middleware";
+import { createJSONStorage } from "zustand/middleware";
 interface TenantCart {
   productIds: string[];
 }
