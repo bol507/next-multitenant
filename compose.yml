@@ -18,8 +18,8 @@ services:
     stdin_open: true 
     tty: true
     volumes:
-      - stripe_config:/root/.config/stripe
-    command: listen --forward-to localhost:3000/api/stripe/webhooks
+      - stripe_config:/root/.config/stripe 
+    command: listen --forward-to host.docker.internal:3000/api/stripe/webhooks
   
   
 volumes:

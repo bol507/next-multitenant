@@ -1,4 +1,3 @@
-import { PriceFilter } from "@/modules/products/ui/components/price-filter";
 import { Media, Tenant } from "@/payload-types";
 import { baseProcedure, createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
