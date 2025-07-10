@@ -41,7 +41,7 @@ export const  SearchInput = ({
           className=""
           onClick={() => {}}
         >
-          <Link href="/Library">
+          <Link href="/library">
             <BookmarkCheckIcon className="mr-2 text-neutral-500" />
             Library
           </Link>

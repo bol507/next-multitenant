@@ -1,0 +1,28 @@
+"use client"
+
+import Link from "next/link"
+import { ArrowLeftIcon } from "lucide-react"
+
+export const LibraryView = () => {
+  return (
+    <div className="min-h-screen bg-white">
+      <nav className="p-4 w-full border-b bg-[#f4f4f0]">
+        <Link prefetch href="/" className="flex items-center gap-2">
+          <ArrowLeftIcon className="size-4" />
+          <span className="font-medium text">Continue shopping</span>
+        </Link>
+      </nav>
+      <header className="bg-[#f4f4f0] py-8 border-b">
+        <div className="mx-auto px-4 flex flex-col gap-y-4 max-w-(--breakpoint-xl) lg:px-12">
+          <h1 className="text-[40px] font-medium">Library</h1>
+          <p className="font-medium">
+            Your purchases and reviews
+          </p>
+        </div>
+      </header>
+      <section className="max-w-(--breakpoint-xl) mx-auto px-4 py-10 lg:px-12">
+
+      </section>
+    </div>
+  )
+} 

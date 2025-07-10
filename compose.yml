@@ -30,7 +30,6 @@ services:
       - stripe-cli
     volumes:
       - .:/usr/src/app
-      - /usr/src/app/node_modules
     command: sh 
     stdin_open: true
     tty: true
