@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { ProductFilters } from "../components/product-filters";
 import { ProductSort } from "../components/product-sort";
 import { ProductList, ProductListSkeleton } from "../components/product-list";
-import { params } from "../../search-params";
 
 interface Props {
   category?: string;
