@@ -16,14 +16,11 @@ export const CartButton = (props: Props) => {
 
   if(isPurchased){
     return (
-      <Button
-        variant="elevated"
-        className="flex-1 bg-white"
-      >
-        <Link prefetch href={`/library/${productId}`}>
+      <Link prefetch href={`/library/${productId}`} className="flex-1">
+        <Button variant="elevated" className="w-full bg-white" aria-label="View this product in the library">
           View in library
-        </Link>
-      </Button>
+        </Button>
+      </Link>
     )
   }
 

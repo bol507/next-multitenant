@@ -19,7 +19,7 @@ export const ProductCard  = (props: IProductCardProps) => {
   
   return (
     <Link href={`/library/${id}`}>
-      <div className="hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-shadow border rounded-md bg-white overflow-hidden h-hull flex flex-col">
+      <div className="hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-shadow border rounded-md bg-white overflow-hidden h-full flex flex-col">
         <div className="relative aspect-square">
           <Image 
             src={imageUrl || "/placeholder.webp"} //https://picsum.photos/1280/720
@@ -61,7 +61,13 @@ export const ProductCard  = (props: IProductCardProps) => {
 
 export const ProductCardSkeleton = () => {
   return (
-    <div className="w-full aspect-3/4 bg-neutral-200 rounded-lg animate-pulse">    
-    </div>
+   <div className="border rounded-md bg-white overflow-hidden h-full flex flex-col">
++      <div className="relative aspect-square bg-neutral-200 animate-pulse"></div>
++      <div className="p-4 border-y flex flex-col gap-3 flex-1">
++        <div className="h-6 bg-neutral-200 rounded animate-pulse"></div>
++        <div className="h-4 bg-neutral-200 rounded animate-pulse w-2/3"></div>
++        <div className="h-4 bg-neutral-200 rounded animate-pulse w-1/2"></div>
++      </div>
++    </div>
   );
 }

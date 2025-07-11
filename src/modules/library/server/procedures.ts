@@ -11,26 +11,29 @@ export const libraryRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-
-      const ordersData = await ctx.db.find({
+      // First get all unique product IDs for the user
+      const allOrdersData = await ctx.db.find({
         collection: "orders",
         depth: 0, // we want to get only the product
-        page: input.cursor,
-        limit: input.limit,
+        pagination: false,
         where:{
           user:{
             equals: ctx.session.user.id
           }
         }
-      })
+      });
 
-      const productIds = ordersData.docs.map((order) => order.product)
+      //get unique product ids to avoid duplicates
+      const uniqueProductIds = [...new Set(allOrdersData.docs.map((order) => order.product))];
+      // Apply pagination to the products query
       const productData = await ctx.db.find({
         collection: "products",
-        pagination: false,
+        depth:2,
+        page: input.cursor,
+        limit: input.limit,
         where: {
           id: {
-            in: productIds
+            in: uniqueProductIds,
           }
         }
       });
