@@ -1,12 +1,12 @@
 FROM node:22-bullseye
 #crear workdir
 WORKDIR /usr/src/app
-# Install pnpm globally
-RUN npm install -g pnpm
+
+COPY package*.json ./
+
+RUN npm install
 
 COPY . .
-
-RUN pnpm install
 
 ENV PORT 3000
 
