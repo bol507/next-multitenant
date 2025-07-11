@@ -1,7 +1,10 @@
 import Stripe from "stripe"
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-03-31.basil",
-  typescript: true,
-})
+const secret = process.env.STRIPE_SECRET_KEY
+if (!secret) {
+  throw new Error("STRIPE_SECRET_KEY env var is not set")
+}
 
+export const stripe = new Stripe(secret, {
+  apiVersion: "2025-03-31.basil", 
+})

@@ -113,8 +113,12 @@ export const ProductView = (props: Props) => {
             <div className="border-t lg:border-t-0 lg:border-l h-full">
               <div className="flex flex-col gap-4 p-6 border-b">
                 <div className="flex flex-row items-center gap-2">
-                 
-                  <CartButton tenantSlug={tenantSlug} productId={product?.id} />
+                
+                  <CartButton
+                    isPurchased={product.isPurchased}
+                    tenantSlug={tenantSlug} 
+                    productId={product?.id} 
+                  />
 
                   <Button
                     variant="elevated"

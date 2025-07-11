@@ -17,7 +17,7 @@ export async function POST (req: Request) {
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    if(error! instanceof Error) {
+    if(!(error instanceof Error)) {
       console.log(error);
     }
     console.error(`❌ Error message: ${errorMessage}`);
@@ -63,7 +63,7 @@ export async function POST (req: Request) {
                 stripeCheckoutSessionId: data.id,
                 user: user.id,
                 product: lineItem.price.product.metadata.id,
-                name: lineItem.price.product.name
+                name: lineItem.price.product.name || "Unknown product",
                 
               },
             })

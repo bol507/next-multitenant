@@ -6,9 +6,6 @@ services:
     restart: always
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
       - mongo_data:/data/db
 
@@ -18,10 +15,25 @@ services:
     stdin_open: true 
     tty: true
     volumes:
-      - stripe_config:/root/.config/stripe
-    command: listen --forward-to localhost:3000/api/stripe/webhooks
+      - stripe_config:/root/.config/stripe 
+    command: listen --forward-to host.docker.internal:3000/api/stripe/webhooks
   
-  
+  next_dev:
+    container_name: next_container
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - db
+      - stripe-cli
+    volumes:
+      - .:/usr/src/app
+    command: sh 
+    stdin_open: true
+    tty: true
+
 volumes:
   mongo_data:
   stripe_config:
