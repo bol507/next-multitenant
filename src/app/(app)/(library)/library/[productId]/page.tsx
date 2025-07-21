@@ -1,4 +1,3 @@
-import { DEFAULT_LIMIT } from "@/constants";
 import { ProductView } from "@/modules/library/ui/views/product-view";
 import { getQueryClient, trpc } from "@/trpc/server"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
