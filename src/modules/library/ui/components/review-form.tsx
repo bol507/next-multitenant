@@ -1,9 +1,14 @@
+import StarPicker from "@/components/start-picker"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
 import { ReviewGetOneOutput } from "@/modules/reviews/types"
+import { useTRPC } from "@/trpc/client"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 
 interface Props {
@@ -17,16 +22,54 @@ const formSchema = z.object({
 })
 
 export const ReviewForm = ({ productId, initialData }: Props) => {
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
+  const createReview = useMutation(trpc.reviews.create.mutationOptions(
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(trpc.reviews.getOne.queryOptions({ productId }))
+        setIsPreview(true)
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      }
+    }
+  ))
+  const updateReview = useMutation(trpc.reviews.update.mutationOptions(
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(trpc.reviews.getOne.queryOptions({ productId }))
+        setIsPreview(true)
+      },
+      onError: (error) => {
+        toast.error(error.message)
+      }
+    }
+  ))
+
   const [isPreview, setIsPreview] = useState(!!initialData)
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
       rating: initialData?.rating ?? 0,
       description: initialData?.description ?? "",
-    }
+    },
+    resolver: zodResolver(formSchema),
   })
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log(data)
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if(initialData) {
+      updateReview.mutate({
+        reviewId: initialData.id,
+        rating: values.rating,
+        description: values.description,
+      })
+    } else {
+      createReview.mutate({
+        productId,
+        rating: values.rating,
+        description: values.description,
+      })
+    }
   }
 
   return (
@@ -40,6 +83,22 @@ export const ReviewForm = ({ productId, initialData }: Props) => {
             isPreview ? "Your rating: " : " Liked it? Give it a rating:"
           }
         </p>
+        <FormField
+          control={form.control}
+          name="rating"
+          render={( { field } ) => (
+            <FormItem>
+              <FormControl>
+                <StarPicker
+                  value={field.value}
+                  onChange={field.onChange}
+                  disabled={isPreview}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="description"
@@ -60,7 +119,7 @@ export const ReviewForm = ({ productId, initialData }: Props) => {
           !isPreview && (
             <Button
               type="submit"
-              disabled={form.formState.isSubmitting}
+              disabled={createReview.isPending || updateReview.isPending}
               className="bg-black text-white hover:bg-pink-400 hover:text-primary w-fit"
               size="lg"
               variant="elevated"
@@ -74,7 +133,7 @@ export const ReviewForm = ({ productId, initialData }: Props) => {
         isPreview && (
           <Button
             onClick={() => setIsPreview(false)}
-            className=" w-fit"
+            className=" w-fit mt-4"
             size="lg"
             variant="elevated"
             type="button"
