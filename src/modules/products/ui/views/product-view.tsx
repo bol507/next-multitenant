@@ -6,10 +6,10 @@ import { Progress } from "@/components/ui/progress";
 import { formatCurrency, generateTenantURL } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { LinkIcon, StarIcon } from "lucide-react";
+import { CheckIcon, LinkIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
 
@@ -33,6 +33,8 @@ export const ProductView = (props: Props) => {
   const { data: product } = useSuspenseQuery(
     trpc.products.getOne.queryOptions({ id: productId })
   );
+
+  const [isCopied, setIsCopied] = useState(false);
    
   return (
     <div className="px-4 lg:px-12 py-16">
@@ -133,13 +135,18 @@ export const ProductView = (props: Props) => {
                   <Button
                     variant="elevated"
                     className="size-12"
-                    disabled={false}
+                    disabled={isCopied}
                     onClick={() => {
                       navigator.clipboard.writeText(window.location.href)
                       toast.success("Copied to clipboard")
+                      setIsCopied(true)
+                      setTimeout(() => setIsCopied(false), 2000)
                     }}
                   >
-                    <LinkIcon />
+                    { 
+                      isCopied ? <CheckIcon /> : <LinkIcon />
+                    }
+                    
                   </Button>
                 </div>
                 <p className="text-center font-medium">
