@@ -151,15 +151,35 @@ export const productsRouter = createTRPCRouter({
         page: input.cursor,
         limit: input.limit,
       })
-    // await new Promise((resolve) => setTimeout(resolve, 5000))
-    return {
-      ...data,
-      docs: data.docs.map((doc) => ({
-        ...doc,
-        image: doc.image as Media,
-        tenant: doc.tenant as Tenant & { image: Media | null },
-      })),
-    }
+      const dataWithSummarizedReviews = await Promise.all (
+        data.docs.map(async (doc) => {
+          const reviewsData = await ctx.db.find({
+            collection: "reviews",
+            pagination: false,
+            where: {
+              product: {
+                equals: doc.id
+              }
+            }
+          });
+          return {
+            ...doc,
+            reviewCount: reviewsData.totalDocs,
+            reviewRating: 
+              reviewsData.docs.length === 0
+                ? 0
+                : reviewsData.docs.reduce((acc, review) => acc + review.rating, 0) / reviewsData.totalDocs,
+          }
+        })
+      )
+      return {
+        ...data,
+        docs: dataWithSummarizedReviews.map((doc) => ({
+          ...doc,
+          image: doc.image as Media,
+          tenant: doc.tenant as Tenant & { image: Media | null },
+        })),
+      }
   }),
 });
   
