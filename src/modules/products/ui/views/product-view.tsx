@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Fragment } from "react";
 import dynamic from "next/dynamic";
+import { toast } from "sonner";
 
 const CartButton = dynamic(
   () => import("../components/cart-button").then((mod) => mod.CartButton),
@@ -79,17 +80,26 @@ export const ProductView = (props: Props) => {
               </div>
 
               <div className="hidden lg:flex px-6 py-4 items-center justify-center">
-                <div className="flex items-center gap-1">
-                  <StarRating rating={4} iconClassName="size-4" />
+                <div className="flex items-center gap-2">
+                  <StarRating 
+                    rating={product?.reviewRating}
+                    iconClassName="size-4" 
+                  />
+                  <p className="text-base font-medium">
+                  {product?.reviewCount} ratings
+                </p>
                 </div>
               </div>
             </div>
             
             <div className="block lg:hidden px-6 py-4 border-b items-center justify-center">
-              <div className="flex items-center gap-1">
-                <StarRating rating={4} iconClassName="size-4" />
+              <div className="flex items-center gap-2">
+                <StarRating 
+                  rating={product?.reviewRating}
+                  iconClassName="size-4" 
+                />
                 <p className="text-base font-medium">
-                  {5} ratings
+                  {product?.reviewCount} ratings
                 </p>
               </div>
             </div>
@@ -124,7 +134,10 @@ export const ProductView = (props: Props) => {
                     variant="elevated"
                     className="size-12"
                     disabled={false}
-                    onClick={() => {}}
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href)
+                      toast.success("Copied to clipboard")
+                    }}
                   >
                     <LinkIcon />
                   </Button>
@@ -143,9 +156,9 @@ export const ProductView = (props: Props) => {
                   </h3>
                   <div className="flex items-center gap-x-1 font-medium">
                     <StarIcon className="size-3.5 fill-black" />
-                    <p>({5})</p>
+                    <p>({product?.reviewRating})</p>
                     <p className='text-base'>
-                      {5} ratings
+                      {product?.reviewCount} ratings
                     </p>
                   </div>
                 </div>
@@ -158,11 +171,11 @@ export const ProductView = (props: Props) => {
                           {stars} {stars === 1 ? "star" : "stars"}
                         </div>
                         <Progress
-                          value={0}
+                          value={product?.ratingDistribution[stars]}
                           className="h-[1lh]"
                         />
                         <div className="font-medium">
-                          {0}%
+                          {product?.ratingDistribution[stars]}%
                         </div>
                       </Fragment>
                     ))
