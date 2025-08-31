@@ -51,7 +51,8 @@ export async function POST (req: Request) {
           }
           const expandedSession = await stripe.checkout.sessions.retrieve(
             data.id,
-            { expand: ["line_items.data.price.product"] }
+            { expand: ["line_items.data.price.product"] },
+            { stripeAccount: event.account,}
           );
           if (!expandedSession.line_items?.data || !expandedSession.line_items.data.length) {
             throw new Error("Line items not found");
@@ -62,6 +63,7 @@ export async function POST (req: Request) {
               collection: "orders",
               data: {
                 stripeCheckoutSessionId: data.id,
+                stripeAccountId: event.account,
                 user: user.id,
                 product: lineItem.price.product.metadata.id,
                 name: lineItem.price.product.name || "Unknown product",

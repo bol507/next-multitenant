@@ -6,6 +6,7 @@ import { z } from "zod";
 import { CheckoutMetadata, ProductMetadata } from "../types";
 import { stripe } from "@/lib/stripe";
 import { Cctv } from "lucide-react";
+import { PLATAFORM_FEE_PERCENTAGE } from "@/constants";
 
 export const checkoutRouter = createTRPCRouter({
   verify: protectedProcedure
@@ -92,7 +93,9 @@ export const checkoutRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Tenant not found" })
       }
 
-      //TODO: Implement payment
+      if(!tenant.stripeDetailsSubmitted) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Tenant not Allowed to sell products" })
+      }
 
       const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = 
         products.docs.map((product) => ({
@@ -111,6 +114,13 @@ export const checkoutRouter = createTRPCRouter({
             },
           },
         }))
+
+      const totalAmount =  products.docs.reduce(
+        (acc,item) => acc + item.price * 100, 0
+      )
+
+      const plataformFeeAmount = Math.round(totalAmount *(PLATAFORM_FEE_PERCENTAGE / 100))
+
       const checkout = await stripe.checkout.sessions.create({
         customer_email: ctx.session.user.email,
         success_url: `${process.env.NEXT_PUBLIC_APP_URL}/tenants/${input.tenantSlug}/checkout?success=true`,
@@ -123,7 +133,12 @@ export const checkoutRouter = createTRPCRouter({
         metadata: {
           userId: ctx.session.user.id,
         } as CheckoutMetadata,
+        payment_intent_data: {
+         application_fee_amount: plataformFeeAmount,
+        }
         
+      },{
+        stripeAccount: tenant.stripeAccountId,
       });
 
       if(!checkout.url) {
