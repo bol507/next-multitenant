@@ -30,6 +30,7 @@ export async function POST (req: Request) {
   console.log("✅ Successfully received webhook event:", event.id);
   const permittedEvents: string[] = [
     "checkout.session.completed",
+    "account.updated",
   ]
   const payload = await getPayload({ config })
   if ( permittedEvents.includes(event.type)) {
@@ -50,7 +51,8 @@ export async function POST (req: Request) {
           }
           const expandedSession = await stripe.checkout.sessions.retrieve(
             data.id,
-            { expand: ["line_items.data.price.product"] }
+            { expand: ["line_items.data.price.product"] },
+            { stripeAccount: event.account,}
           );
           if (!expandedSession.line_items?.data || !expandedSession.line_items.data.length) {
             throw new Error("Line items not found");
@@ -61,6 +63,7 @@ export async function POST (req: Request) {
               collection: "orders",
               data: {
                 stripeCheckoutSessionId: data.id,
+                stripeAccountId: event.account,
                 user: user.id,
                 product: lineItem.price.product.metadata.id,
                 name: lineItem.price.product.name || "Unknown product",
@@ -68,6 +71,20 @@ export async function POST (req: Request) {
               },
             })
           }
+          break;
+        case "account.updated":
+          data = event.data.object as Stripe.Account
+          await payload.update({
+            collection: "tenants",
+            where: {
+              stripeAccountId: {
+                equals: data.id,
+              }
+            },
+            data: {
+              stripeDetailsSubmitted: data.details_submitted
+            }
+          })
           break;
         default:
           throw new Error("Unsupported event type : " + event.type);
